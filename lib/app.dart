@@ -16,6 +16,14 @@ class LarischApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: router,
+      builder: (context, child) {
+        if (child == null) return const SizedBox.shrink();
+        return MediaQuery.withClampedTextScaling(
+          minScaleFactor: 0.85,
+          maxScaleFactor: 1.25,
+          child: child,
+        );
+      },
     );
   }
 }

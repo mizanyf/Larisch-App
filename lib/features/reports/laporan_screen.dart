@@ -88,6 +88,8 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
     final breakdown = summary?.expenseByCategory ?? const <CategoryExpenseSummary>[];
 
     final isProfit = netProfit >= 0;
+    final hPad = AppResponsive.horizontalPadding(context);
+    final bottomClearance = AppResponsive.bottomNavClearance(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -99,10 +101,11 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                  padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 24),
+                  child: AppResponsive.constrain(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       // Header Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,10 +239,14 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                         ],
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        CurrencyFormatter.formatNetProfit(netProfit),
-                        style: AppTypography.displayBalance(
-                          color: AppColors.textOnDark,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          CurrencyFormatter.formatNetProfit(netProfit),
+                          style: AppTypography.displayBalance(
+                            color: AppColors.textOnDark,
+                          ),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.lg),
@@ -251,27 +258,27 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                       ),
                     ],
                   ),
+                  ),
                 ),
               ),
             ),
             // White Content Sheet
-            SliverFillRemaining(
-              hasScrollBody: false,
+            SliverToBoxAdapter(
               child: Container(
                 width: double.infinity,
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.sizeOf(context).height * 0.55,
+                ),
                 decoration: const BoxDecoration(
                   color: AppColors.surfaceWhite,
                   borderRadius: AppRadius.sheetTopBorder,
                 ),
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  AppSpacing.bottomNavClearance,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                padding: EdgeInsets.fromLTRB(hPad, 20, hPad, bottomClearance),
+                child: AppResponsive.constrain(
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     // 2-Column Income vs Expense Cards
                     Row(
                       children: [
@@ -390,6 +397,7 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                         }),
                       ),
                   ],
+                ),
                 ),
               ),
             ),

@@ -54,6 +54,8 @@ class BerandaScreen extends ConsumerWidget {
     final categoryMap = {for (final c in categories) c.id: c.name};
 
     final recentTransactions = allTransactions.take(5).toList();
+    final hPad = AppResponsive.horizontalPadding(context);
+    final bottomClearance = AppResponsive.bottomNavClearance(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -65,167 +67,176 @@ class BerandaScreen extends ConsumerWidget {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Brand + Period Selector Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              const LarischLogoBadge(size: 32),
-                              const SizedBox(width: AppSpacing.sm),
-                              Text(
-                                'Larisch',
-                                style: AppTypography.pageTitle(
-                                  color: AppColors.textOnDark,
-                                ).copyWith(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                          InkWell(
-                            onTap: () => showMonthPickerSheet(
-                              context,
-                              ref,
-                              selectedMonth,
-                            ),
-                            borderRadius: AppRadius.smBorder,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 7,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.darkCard,
-                                borderRadius: AppRadius.smBorder,
-                                border: Border.all(color: AppColors.darkBorder),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    AppDateFormatter.monthYear(selectedMonth),
-                                    style: AppTypography.captionMedium(
-                                      color: AppColors.textOnDark,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    color: AppColors.textOnDarkMuted,
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      // Business Name + Manual Balance Disclosure
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              businessName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.sectionHeading(
-                                color: AppColors.textOnDark,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            'Saldo tercatat manual',
-                            style: AppTypography.caption(
-                              color: AppColors.textOnDarkSubtle,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      // Total Saldo Kas Card (Strictly distinct from Laba Bersih)
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCard,
-                          borderRadius: AppRadius.cardLargeBorder,
-                          border: Border.all(color: AppColors.darkBorder),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 24),
+                  child: AppResponsive.constrain(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Brand + Period Selector Row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Total Saldo Kas',
-                              style: AppTypography.caption(
-                                color: AppColors.textOnDarkMuted,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              CurrencyFormatter.format(
-                                cashSummary?.totalCashBalance ?? 0,
-                              ),
-                              style: AppTypography.displayBalance(
-                                color: AppColors.textOnDark,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-                            const Divider(color: AppColors.darkBorder),
-                            const SizedBox(height: AppSpacing.md),
                             Row(
                               children: [
-                                Expanded(
-                                  child: _AccountBalanceColumn(
-                                    label: 'Tunai',
-                                    amount: cashSummary?.cashBalance ?? 0,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _AccountBalanceColumn(
-                                    label: 'QRIS',
-                                    amount: cashSummary?.qrisBalance ?? 0,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _AccountBalanceColumn(
-                                    label: 'Rekening',
-                                    amount: cashSummary?.bankBalance ?? 0,
-                                  ),
+                                const LarischLogoBadge(size: 32),
+                                const SizedBox(width: AppSpacing.sm),
+                                Text(
+                                  'Larisch',
+                                  style: AppTypography.pageTitle(
+                                    color: AppColors.textOnDark,
+                                  ).copyWith(fontSize: 18),
                                 ),
                               ],
                             ),
+                            InkWell(
+                              onTap: () => showMonthPickerSheet(
+                                context,
+                                ref,
+                                selectedMonth,
+                              ),
+                              borderRadius: AppRadius.smBorder,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 7,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkCard,
+                                  borderRadius: AppRadius.smBorder,
+                                  border: Border.all(
+                                    color: AppColors.darkBorder,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      AppDateFormatter.monthYear(selectedMonth),
+                                      style: AppTypography.captionMedium(
+                                        color: AppColors.textOnDark,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: AppColors.textOnDarkMuted,
+                                      size: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: AppSpacing.lg),
+                        // Business Name + Manual Balance Disclosure
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                businessName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.sectionHeading(
+                                  color: AppColors.textOnDark,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              'Saldo tercatat manual',
+                              style: AppTypography.caption(
+                                color: AppColors.textOnDarkSubtle,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        // Total Saldo Kas Card (Strictly distinct from Laba Bersih)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.darkCard,
+                            borderRadius: AppRadius.cardLargeBorder,
+                            border: Border.all(color: AppColors.darkBorder),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Saldo Kas',
+                                style: AppTypography.caption(
+                                  color: AppColors.textOnDarkMuted,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  CurrencyFormatter.format(
+                                    cashSummary?.totalCashBalance ?? 0,
+                                  ),
+                                  style: AppTypography.displayBalance(
+                                    color: AppColors.textOnDark,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                              const Divider(color: AppColors.darkBorder),
+                              const SizedBox(height: AppSpacing.md),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _AccountBalanceColumn(
+                                      label: 'Tunai',
+                                      amount: cashSummary?.cashBalance ?? 0,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    child: _AccountBalanceColumn(
+                                      label: 'QRIS',
+                                      amount: cashSummary?.qrisBalance ?? 0,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    child: _AccountBalanceColumn(
+                                      label: 'Rekening',
+                                      amount: cashSummary?.bankBalance ?? 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             // Clean White Content Sheet
-            SliverFillRemaining(
-              hasScrollBody: false,
+            SliverToBoxAdapter(
               child: Container(
                 width: double.infinity,
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.sizeOf(context).height * 0.62,
+                ),
                 decoration: const BoxDecoration(
                   color: AppColors.surfaceWhite,
                   borderRadius: AppRadius.sheetTopBorder,
                 ),
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  AppSpacing.bottomNavClearance,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                padding: EdgeInsets.fromLTRB(hPad, 20, hPad, bottomClearance),
+                child: AppResponsive.constrain(
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     // Laba Bersih (Periode) Card
                     _ProfitSummaryCard(
                       monthLabel: AppDateFormatter.monthYear(selectedMonth),
@@ -325,6 +336,7 @@ class BerandaScreen extends ConsumerWidget {
                       ),
                   ],
                 ),
+              ),
               ),
             ),
           ],

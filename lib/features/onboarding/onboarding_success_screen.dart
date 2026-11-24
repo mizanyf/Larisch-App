@@ -18,86 +18,119 @@ class OnboardingSuccessScreen extends ConsumerWidget {
     final businessName = draft.businessName.isEmpty
         ? 'Usaha Kamu'
         : draft.businessName;
+    final hPad = AppResponsive.horizontalPadding(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: AppColors.darkBase,
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Spacer(),
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: AppColors.incomeGreen.withValues(alpha: 0.16),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.incomeGreenLight.withValues(alpha: 0.4),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    color: AppColors.incomeGreenLight,
-                    size: 36,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xxl),
-                Text(
-                  '$businessName Siap Dicatat!',
-                  textAlign: TextAlign.center,
-                  style: AppTypography.headlineLarge(
-                    color: AppColors.textOnDark,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  'Saldo awal kas sudah tersimpan di perangkatmu. Mulai catat pemasukan dan pengeluaran harian kapan saja secara offline.',
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodyRegular(
-                    color: AppColors.textOnDarkMuted,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xxl),
-                Container(
-                  width: double.infinity,
-                  padding: AppSpacing.cardInsets,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkCard,
-                    borderRadius: AppRadius.cardBorder,
-                    border: Border.all(color: AppColors.darkBorder),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Total Saldo Kas Awal',
-                        style: AppTypography.caption(
-                          color: AppColors.textOnDarkMuted,
+          child: Column(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.all(hPad),
+                      child: AppResponsive.constrain(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: (constraints.maxHeight - hPad * 2)
+                                .clamp(0, double.infinity),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  color: AppColors.incomeGreen.withValues(
+                                    alpha: 0.16,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.incomeGreenLight
+                                        .withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.check_rounded,
+                                  color: AppColors.incomeGreenLight,
+                                  size: 36,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xxl),
+                              Text(
+                                '$businessName Siap Dicatat!',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.headlineLarge(
+                                  color: AppColors.textOnDark,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                'Saldo awal kas sudah tersimpan di perangkatmu. Mulai catat pemasukan dan pengeluaran harian kapan saja secara offline.',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodyRegular(
+                                  color: AppColors.textOnDarkMuted,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xxl),
+                              Container(
+                                width: double.infinity,
+                                padding: AppSpacing.cardInsets,
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkCard,
+                                  borderRadius: AppRadius.cardBorder,
+                                  border: Border.all(
+                                    color: AppColors.darkBorder,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Total Saldo Kas Awal',
+                                      style: AppTypography.caption(
+                                        color: AppColors.textOnDarkMuted,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.xs),
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        CurrencyFormatter.format(
+                                          draft.totalInitialCash,
+                                        ),
+                                        style: AppTypography.displayBalance(
+                                          color: AppColors.textOnDark,
+                                        ).copyWith(fontSize: 26),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        CurrencyFormatter.format(draft.totalInitialCash),
-                        style: AppTypography.displayBalance(
-                          color: AppColors.textOnDark,
-                        ).copyWith(fontSize: 26),
-                      ),
-                    ],
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 20),
+                child: AppResponsive.constrain(
+                  FilledButton(
+                    onPressed: () {
+                      ref.read(onboardingDraftProvider.notifier).reset();
+                      context.go(AppRoutes.beranda);
+                    },
+                    child: const Text('Masuk ke Beranda'),
                   ),
                 ),
-                const Spacer(),
-                FilledButton(
-                  onPressed: () {
-                    ref.read(onboardingDraftProvider.notifier).reset();
-                    context.go(AppRoutes.beranda);
-                  },
-                  child: const Text('Masuk ke Beranda'),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

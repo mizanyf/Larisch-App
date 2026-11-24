@@ -200,91 +200,105 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
     final submitColor = _isEditing
         ? AppColors.accentBlue
         : (_isIncome ? AppColors.incomeGreen : AppColors.expenseRed);
+    final hPad = AppResponsive.horizontalPadding(context);
+    final compactTop =
+        AppResponsive.isKeyboardOpen(context) ||
+        AppResponsive.isSmallHeight(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: AppColors.darkBase,
+        resizeToAvoidBottomInset: true,
         body: Column(
           children: [
             // Dark Top Header + Type Toggle + Large Amount Input
             SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () => context.pop(),
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.textOnDarkMuted,
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(48, 36),
-                          ),
-                          child: const Text('Batal'),
-                        ),
-                        Expanded(
-                          child: Text(
-                            screenTitle,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.sectionHeading(
-                              color: AppColors.textOnDark,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 48),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    // Segmented Type Toggle
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: AppColors.darkCard,
-                        borderRadius: AppRadius.buttonBorder,
-                        border: Border.all(color: AppColors.darkBorder),
-                      ),
-                      child: Row(
+                padding: EdgeInsets.fromLTRB(
+                  hPad,
+                  compactTop ? 4 : 8,
+                  hPad,
+                  compactTop ? 12 : 20,
+                ),
+                child: AppResponsive.constrain(
+                  Column(
+                    children: [
+                      Row(
                         children: [
-                          Expanded(
-                            child: _TypeSegmentButton(
-                              label: 'Pemasukan',
-                              isSelected: _isIncome,
-                              activeColor: AppColors.incomeGreen,
-                              onTap: () => _switchType(TransactionTypes.income),
+                          TextButton(
+                            onPressed: () => context.pop(),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.textOnDarkMuted,
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(48, 36),
                             ),
+                            child: const Text('Batal'),
                           ),
                           Expanded(
-                            child: _TypeSegmentButton(
-                              label: 'Pengeluaran',
-                              isSelected: !_isIncome,
-                              activeColor: AppColors.expenseRed,
-                              onTap: () =>
-                                  _switchType(TransactionTypes.expense),
+                            child: Text(
+                              screenTitle,
+                              textAlign: TextAlign.center,
+                              style: AppTypography.sectionHeading(
+                                color: AppColors.textOnDark,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 48),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    Text(
-                      _isIncome ? 'Nominal Pemasukan' : 'Nominal Pengeluaran',
-                      style: AppTypography.caption(
-                        color: AppColors.textOnDarkMuted,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    GestureDetector(
-                      onTap: () => _amountFocusNode.requestFocus(),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 14,
+                      SizedBox(height: compactTop ? AppSpacing.sm : AppSpacing.md),
+                      // Segmented Type Toggle
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.darkCard,
+                          borderRadius: AppRadius.buttonBorder,
+                          border: Border.all(color: AppColors.darkBorder),
                         ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _TypeSegmentButton(
+                                label: 'Pemasukan',
+                                isSelected: _isIncome,
+                                activeColor: AppColors.incomeGreen,
+                                onTap: () =>
+                                    _switchType(TransactionTypes.income),
+                              ),
+                            ),
+                            Expanded(
+                              child: _TypeSegmentButton(
+                                label: 'Pengeluaran',
+                                isSelected: !_isIncome,
+                                activeColor: AppColors.expenseRed,
+                                onTap: () =>
+                                    _switchType(TransactionTypes.expense),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: compactTop ? AppSpacing.md : AppSpacing.xl,
+                      ),
+                      Text(
+                        _isIncome ? 'Nominal Pemasukan' : 'Nominal Pengeluaran',
+                        style: AppTypography.caption(
+                          color: AppColors.textOnDarkMuted,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      GestureDetector(
+                        onTap: () => _amountFocusNode.requestFocus(),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 160),
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: compactTop ? 10 : 14,
+                          ),
                         decoration: BoxDecoration(
                           color: AppColors.darkCard,
                           borderRadius: AppRadius.cardBorder,
@@ -397,6 +411,7 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
                       ),
                     ],
                   ],
+                ),
                 ),
               ),
             ),

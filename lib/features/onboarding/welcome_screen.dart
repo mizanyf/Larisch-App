@@ -12,6 +12,9 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hPad = AppResponsive.horizontalPadding(context);
+    final isCompact = AppResponsive.isSmallHeight(context);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -21,58 +24,88 @@ class WelcomeScreen extends StatelessWidget {
             Expanded(
               child: SafeArea(
                 bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const LarischLogoBadge(size: 36),
-                          const SizedBox(width: AppSpacing.md),
-                          Text(
-                            'Larisch',
-                            style: AppTypography.pageTitle(
-                              color: AppColors.textOnDark,
-                            ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(
+                        hPad,
+                        isCompact ? 16 : 24,
+                        hPad,
+                        isCompact ? 16 : 24,
+                      ),
+                      child: AppResponsive.constrain(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: (constraints.maxHeight -
+                                    (isCompact ? 32 : 48))
+                                .clamp(0, double.infinity),
                           ),
-                        ],
-                      ),
-                      const Spacer(),
-                      Text(
-                        'Pembukuan Usaha\nLebih Mudah & Terarah.',
-                        style: AppTypography.displayBalance(
-                          color: AppColors.textOnDark,
-                        ).copyWith(fontSize: 30, height: 1.2),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        'Catat pemasukan, pantau pengeluaran, dan pahami kondisi kas usahamu dalam satu aplikasi offline yang sederhana.',
-                        style: AppTypography.bodyRegular(
-                          color: AppColors.textOnDarkMuted,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const LarischLogoBadge(size: 36),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Text(
+                                    'Larisch',
+                                    style: AppTypography.pageTitle(
+                                      color: AppColors.textOnDark,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: isCompact ? 20 : 32),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pembukuan Usaha\nLebih Mudah & Terarah.',
+                                    style: AppTypography.displayBalance(
+                                      color: AppColors.textOnDark,
+                                    ).copyWith(
+                                      fontSize: isCompact ? 26 : 30,
+                                      height: 1.2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  Text(
+                                    'Catat pemasukan, pantau pengeluaran, dan pahami kondisi kas usahamu dalam satu aplikasi offline yang sederhana.',
+                                    style: AppTypography.bodyRegular(
+                                      color: AppColors.textOnDarkMuted,
+                                    ),
+                                  ),
+                                  SizedBox(height: isCompact ? 16 : 24),
+                                  const _WelcomeFeatureRow(
+                                    icon: Icons.account_balance_wallet_outlined,
+                                    title: '3 Akun Kas Terpisah',
+                                    subtitle:
+                                        'Pantau Tunai, QRIS, dan Rekening Bank secara manual.',
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  const _WelcomeFeatureRow(
+                                    icon: Icons.insights_outlined,
+                                    title: 'Saldo Kas & Laba Bersih Jelas',
+                                    subtitle:
+                                        'Bedakan uang kas tersedia dengan keuntungan periode.',
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  const _WelcomeFeatureRow(
+                                    icon: Icons.lock_outline_rounded,
+                                    title: '100% Offline & Data Lokal',
+                                    subtitle:
+                                        'Semua catatan tersimpan aman di perangkatmu.',
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xxl),
-                      const _WelcomeFeatureRow(
-                        icon: Icons.account_balance_wallet_outlined,
-                        title: '3 Akun Kas Terpisah',
-                        subtitle: 'Pantau Tunai, QRIS, dan Rekening Bank secara manual.',
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      const _WelcomeFeatureRow(
-                        icon: Icons.insights_outlined,
-                        title: 'Saldo Kas & Laba Bersih Jelas',
-                        subtitle: 'Bedakan uang kas tersedia dengan keuntungan periode.',
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      const _WelcomeFeatureRow(
-                        icon: Icons.lock_outline_rounded,
-                        title: '100% Offline & Data Lokal',
-                        subtitle: 'Semua catatan tersimpan aman di perangkatmu.',
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -84,21 +117,23 @@ class WelcomeScreen extends StatelessWidget {
               ),
               child: SafeArea(
                 top: false,
-                minimum: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FilledButton(
-                      onPressed: () => context.push(AppRoutes.setupProfile),
-                      child: const Text('Mulai Atur Usaha'),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      'Tanpa login akun cloud · Gratis digunakan offline',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.caption(),
-                    ),
-                  ],
+                minimum: EdgeInsets.fromLTRB(hPad, 20, hPad, 20),
+                child: AppResponsive.constrain(
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FilledButton(
+                        onPressed: () => context.push(AppRoutes.setupProfile),
+                        child: const Text('Mulai Atur Usaha'),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Tanpa login akun cloud · Gratis digunakan offline',
+                        textAlign: TextAlign.center,
+                        style: AppTypography.caption(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

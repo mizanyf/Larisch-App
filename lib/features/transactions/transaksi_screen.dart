@@ -130,40 +130,56 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
       grouped.putIfAbsent(header, () => <Transaction>[]).add(tx);
     }
 
+    final hPad = AppResponsive.horizontalPadding(context);
+    final bottomClearance = AppResponsive.bottomNavClearance(context);
+
     return Scaffold(
       backgroundColor: AppColors.surfaceWhite,
       body: SafeArea(
         bottom: false,
-        child: Column(
-          children: [
-            // Header: Title + Account Filter + Month Switcher
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text('Transaksi', style: AppTypography.pageTitle()),
-                  ),
-                  _FilterChipButton(
-                    label: _accountLabel(_selectedAccountId),
-                    onTap: () => _showAccountFilterSheet(context),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  _FilterChipButton(
-                    label: AppDateFormatter.monthYear(selectedMonth),
-                    onTap: () => showMonthPickerSheet(
-                      context,
-                      ref,
-                      selectedMonth,
+        child: AppResponsive.constrain(
+          Column(
+            children: [
+              // Header: Title + Account Filter + Month Switcher
+              Padding(
+                padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Transaksi',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.pageTitle(),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      flex: 0,
+                      child: _FilterChipButton(
+                        label: _accountLabel(_selectedAccountId),
+                        onTap: () => _showAccountFilterSheet(context),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      flex: 0,
+                      child: _FilterChipButton(
+                        label: AppDateFormatter.monthYear(selectedMonth),
+                        onTap: () => showMonthPickerSheet(
+                          context,
+                          ref,
+                          selectedMonth,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Search Bar
-            Padding(
-              padding: AppSpacing.screenPadding,
-              child: TextField(
+              // Search Bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: hPad),
+                child: TextField(
                 controller: _searchController,
                 onChanged: (val) => setState(() => _searchQuery = val),
                 decoration: InputDecoration(
@@ -224,7 +240,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
             const SizedBox(height: AppSpacing.md),
             // Dark Cashflow Summary Bar
             Padding(
-              padding: AppSpacing.screenPadding,
+              padding: EdgeInsets.symmetric(horizontal: hPad),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
@@ -236,49 +252,61 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                   borderRadius: AppRadius.cardBorder,
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Pemasukan',
-                          style: AppTypography.labelSmall(
-                            color: AppColors.textOnDarkMuted,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pemasukan',
+                            style: AppTypography.labelSmall(
+                              color: AppColors.textOnDarkMuted,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          CurrencyFormatter.formatSigned(
-                            filteredIncome,
-                            isIncome: true,
+                          const SizedBox(height: 2),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              CurrencyFormatter.formatSigned(
+                                filteredIncome,
+                                isIncome: true,
+                              ),
+                              style: AppTypography.amountMedium(
+                                color: AppColors.incomeGreenLight,
+                              ),
+                            ),
                           ),
-                          style: AppTypography.amountMedium(
-                            color: AppColors.incomeGreenLight,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Pengeluaran',
-                          style: AppTypography.labelSmall(
-                            color: AppColors.textOnDarkMuted,
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Pengeluaran',
+                            style: AppTypography.labelSmall(
+                              color: AppColors.textOnDarkMuted,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          CurrencyFormatter.formatSigned(
-                            filteredExpense,
-                            isIncome: false,
+                          const SizedBox(height: 2),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              CurrencyFormatter.formatSigned(
+                                filteredExpense,
+                                isIncome: false,
+                              ),
+                              style: AppTypography.amountMedium(
+                                color: const Color(0xFFFCA5A5),
+                              ),
+                            ),
                           ),
-                          style: AppTypography.amountMedium(
-                            color: const Color(0xFFFCA5A5),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -289,9 +317,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
             Expanded(
               child: filtered.isEmpty
                   ? SingleChildScrollView(
-                      padding: const EdgeInsets.only(
-                        bottom: AppSpacing.bottomNavClearance,
-                      ),
+                      padding: EdgeInsets.only(bottom: bottomClearance),
                       child: EmptyStateView(
                         icon: Icons.search_off_rounded,
                         title: 'Tidak Ada Transaksi',
@@ -303,11 +329,11 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                       ),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(
-                        20,
+                      padding: EdgeInsets.fromLTRB(
+                        hPad,
                         4,
-                        20,
-                        AppSpacing.bottomNavClearance,
+                        hPad,
+                        bottomClearance,
                       ),
                       itemCount: grouped.length,
                       itemBuilder: (context, sectionIndex) {
@@ -353,6 +379,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                     ),
             ),
           ],
+        ),
         ),
       ),
     );

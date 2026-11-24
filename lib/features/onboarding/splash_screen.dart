@@ -63,18 +63,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final logoSize = (MediaQuery.sizeOf(context).shortestSide * 0.40).clamp(
+      112.0,
+      168.0,
+    );
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: AppColors.splashBlack,
-        body: Center(
-          child: FadeTransition(
-            opacity: _fadeIn,
-            child: Image.asset(
-              LarischLogoBadge.assetPath,
-              width: 160,
-              height: 160,
-              fit: BoxFit.contain,
+        body: SafeArea(
+          child: Center(
+            child: FadeTransition(
+              opacity: _fadeIn,
+              child: Image.asset(
+                LarischLogoBadge.assetPath,
+                width: logoSize,
+                height: logoSize,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),

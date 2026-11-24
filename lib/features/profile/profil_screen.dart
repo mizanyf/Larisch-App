@@ -40,23 +40,25 @@ class ProfilScreen extends ConsumerWidget {
             'Edit Profil Usaha',
             style: AppTypography.sectionHeading(),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(labelText: 'Nama Usaha'),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: typeController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Jenis Usaha (Opsional)',
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(labelText: 'Nama Usaha'),
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: typeController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Jenis Usaha (Opsional)',
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -130,39 +132,41 @@ class ProfilScreen extends ConsumerWidget {
             'Atur Saldo Awal Manual',
             style: AppTypography.sectionHeading(),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: cashCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [ThousandsRupiahInputFormatter()],
-                decoration: const InputDecoration(
-                  labelText: 'Tunai',
-                  prefixText: 'Rp ',
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: cashCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [ThousandsRupiahInputFormatter()],
+                  decoration: const InputDecoration(
+                    labelText: 'Tunai',
+                    prefixText: 'Rp ',
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: qrisCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [ThousandsRupiahInputFormatter()],
-                decoration: const InputDecoration(
-                  labelText: 'QRIS',
-                  prefixText: 'Rp ',
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: qrisCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [ThousandsRupiahInputFormatter()],
+                  decoration: const InputDecoration(
+                    labelText: 'QRIS',
+                    prefixText: 'Rp ',
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: bankCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [ThousandsRupiahInputFormatter()],
-                decoration: const InputDecoration(
-                  labelText: 'Rekening Bank',
-                  prefixText: 'Rp ',
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: bankCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [ThousandsRupiahInputFormatter()],
+                  decoration: const InputDecoration(
+                    labelText: 'Rekening Bank',
+                    prefixText: 'Rp ',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -276,19 +280,17 @@ class ProfilScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(businessProfileProvider).valueOrNull;
     final accounts = ref.watch(cashAccountsProvider).valueOrNull ?? const [];
+    final hPad = AppResponsive.horizontalPadding(context);
+    final bottomClearance = AppResponsive.bottomNavClearance(context);
 
     return Scaffold(
       backgroundColor: AppColors.surfaceWhite,
       body: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            20,
-            12,
-            20,
-            AppSpacing.bottomNavClearance,
-          ),
-          children: [
+        child: AppResponsive.constrain(
+          ListView(
+            padding: EdgeInsets.fromLTRB(hPad, 12, hPad, bottomClearance),
+            children: [
             Text('Profil & Pengaturan', style: AppTypography.pageTitle()),
             const SizedBox(height: AppSpacing.lg),
             // Business Identity Card
@@ -397,6 +399,7 @@ class ProfilScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
