@@ -272,6 +272,7 @@ class ProfilScreen extends ConsumerWidget {
     if (step2 != true || !context.mounted) return;
 
     await ref.read(financeRepositoryProvider).resetAllData();
+    ref.read(onboardingDraftProvider.notifier).reset();
     if (!context.mounted) return;
     context.go(AppRoutes.welcome);
   }

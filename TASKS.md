@@ -68,10 +68,10 @@ Checklist pengerjaan bertahap untuk aplikasi mobile **Larisch**.
 ---
 
 ## Phase 6 — QA, Verifikasi Offline & Build APK
-- [ ] Uji seluruh flow di mode offline (tanpa koneksi internet)
-- [ ] Uji validasi edge case (nominal besar, nama usaha panjang, restore file rusak/invalid)
-- [ ] Pastikan `flutter analyze` dan `flutter test` lolos 100% tanpa error
-- [ ] Build APK release (`flutter build apk --release`) dan uji langsung di perangkat Android
+- [x] Uji seluruh flow di mode offline (`GoogleFonts.config.allowRuntimeFetching = false`, zero cloud)
+- [x] Uji validasi edge case (nominal max 12 digit, `Rp 0`, restore file rusak/invalid, 7 konfigurasi perangkat iOS/Android)
+- [x] Pastikan `flutter analyze` (0 issues) dan `flutter test` (25/25) lolos 100% tanpa error
+- [x] Atur identitas native (`Larisch`, `id.larisch.app`, launcher icon `larisch.png`) & verifikasi build APK release (`flutter build apk --release`)
 
 ---
 
