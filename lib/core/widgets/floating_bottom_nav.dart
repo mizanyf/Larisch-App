@@ -70,6 +70,10 @@ class FloatingBottomNav extends StatelessWidget {
                             color: isSelected
                                 ? AppColors.textOnDark
                                 : AppColors.textOnDarkMuted,
+                          ).copyWith(
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
                         ),
                       ),

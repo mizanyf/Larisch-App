@@ -16,6 +16,7 @@ import '../../core/theme/theme.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../core/widgets/empty_state_view.dart';
+import '../../core/widgets/month_picker_sheet.dart';
 
 enum ReportRangeMode { daily, weekly, monthly }
 
@@ -119,9 +120,11 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                           if (_rangeMode == ReportRangeMode.monthly) ...[
                             const SizedBox(width: AppSpacing.sm),
                             InkWell(
-                              onTap: () => ref
-                                  .read(selectedMonthProvider.notifier)
-                                  .previousMonth(),
+                              onTap: () => showMonthPickerSheet(
+                                context,
+                                ref,
+                                selectedMonth,
+                              ),
                               borderRadius: AppRadius.smBorder,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -135,11 +138,22 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                                     color: AppColors.darkBorder,
                                   ),
                                 ),
-                                child: Text(
-                                  AppDateFormatter.monthYear(selectedMonth),
-                                  style: AppTypography.captionMedium(
-                                    color: AppColors.textOnDark,
-                                  ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      AppDateFormatter.monthYear(selectedMonth),
+                                      style: AppTypography.captionMedium(
+                                        color: AppColors.textOnDark,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: AppColors.textOnDarkMuted,
+                                      size: 16,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -464,7 +478,7 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _CashflowTrendChart extends StatelessWidget {
+class _CashflowTrendChart extends StatefulWidget {
   const _CashflowTrendChart({
     required this.transactions,
     required this.rangeMode,
@@ -476,25 +490,97 @@ class _CashflowTrendChart extends StatelessWidget {
   final DatePeriod period;
 
   @override
-  Widget build(BuildContext context) {
-    final bucketCount = rangeMode == ReportRangeMode.daily
-        ? 4
-        : (rangeMode == ReportRangeMode.weekly ? 7 : 4);
+  State<_CashflowTrendChart> createState() => _CashflowTrendChartState();
+}
 
+class _CashflowTrendChartState extends State<_CashflowTrendChart> {
+  int? _touchedIndex;
+
+  static const List<String> _shortMonths = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+
+  String _dayMonth(DateTime date) =>
+      '${date.day} ${_shortMonths[date.month - 1]}';
+
+  String _formatCompactSigned(int netAmount) {
+    final abs = netAmount.abs();
+    final sign = netAmount > 0 ? '+' : (netAmount < 0 ? '-' : '');
+    if (abs >= 1000000) {
+      final jt = (abs / 1000000).toStringAsFixed(2).replaceAll('.', ',');
+      return '${sign}Rp $jt jt';
+    }
+    if (abs >= 1000) {
+      final rb = (abs / 1000).round();
+      return '${sign}Rp $rb rb';
+    }
+    return '${sign}Rp $abs';
+  }
+
+  @override
+  void didUpdateWidget(covariant _CashflowTrendChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rangeMode != widget.rangeMode ||
+        oldWidget.period != widget.period) {
+      _touchedIndex = null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bucketCount = widget.rangeMode == ReportRangeMode.daily ? 4 : 7;
     final incomeBuckets = List<double>.filled(bucketCount, 0);
     final expenseBuckets = List<double>.filled(bucketCount, 0);
+    final bucketLabels = List<String>.filled(bucketCount, '');
 
-    for (final tx in transactions) {
+    // Build human-readable bucket labels.
+    if (widget.rangeMode == ReportRangeMode.daily) {
+      const hourLabels = ['00:00', '06:00', '12:00', '18:00'];
+      for (var i = 0; i < bucketCount; i++) {
+        bucketLabels[i] = hourLabels[i];
+      }
+    } else if (widget.rangeMode == ReportRangeMode.weekly) {
+      for (var i = 0; i < bucketCount; i++) {
+        bucketLabels[i] = _dayMonth(
+          widget.period.start.add(Duration(days: i)),
+        );
+      }
+    } else {
+      final totalDays = widget.period.end.day;
+      for (var i = 0; i < bucketCount; i++) {
+        final day = (1 + ((totalDays - 1) * i / (bucketCount - 1))).round();
+        bucketLabels[i] = _dayMonth(
+          DateTime(widget.period.start.year, widget.period.start.month, day),
+        );
+      }
+    }
+
+    // Aggregate transactions into buckets.
+    for (final tx in widget.transactions) {
       int idx;
-      if (rangeMode == ReportRangeMode.daily) {
-        idx = (tx.transactionDate.hour ~/ 6).clamp(0, 3);
-      } else if (rangeMode == ReportRangeMode.weekly) {
+      if (widget.rangeMode == ReportRangeMode.daily) {
+        idx = (tx.transactionDate.hour ~/ 6).clamp(0, bucketCount - 1);
+      } else if (widget.rangeMode == ReportRangeMode.weekly) {
         idx = tx.transactionDate
-            .difference(period.start)
+            .difference(widget.period.start)
             .inDays
             .clamp(0, bucketCount - 1);
       } else {
-        idx = ((tx.transactionDate.day - 1) ~/ 8).clamp(0, 3);
+        final totalDays = math.max(1, widget.period.end.day - 1);
+        idx = (((tx.transactionDate.day - 1) / totalDays) * (bucketCount - 1))
+            .round()
+            .clamp(0, bucketCount - 1);
       }
 
       if (tx.type == TransactionTypes.income) {
@@ -508,64 +594,193 @@ class _CashflowTrendChart extends StatelessWidget {
       incomeBuckets.reduce(math.max),
       expenseBuckets.reduce(math.max),
     );
-    final chartMaxY = maxVal <= 0 ? 100000.0 : maxVal * 1.2;
+    final chartMaxY = maxVal <= 0 ? 100000.0 : maxVal * 1.35;
+
+    // Default active indicator points to the highest-activity bucket (or middle).
+    int defaultIndex = bucketCount ~/ 2;
+    double bestScore = -1;
+    for (var i = 0; i < bucketCount; i++) {
+      final score = incomeBuckets[i] + expenseBuckets[i];
+      if (score > bestScore && score > 0) {
+        bestScore = score;
+        defaultIndex = i;
+      }
+    }
+    final activeIndex = (_touchedIndex ?? defaultIndex).clamp(
+      0,
+      bucketCount - 1,
+    );
+
+    final incomeSpots = List.generate(
+      bucketCount,
+      (i) => FlSpot(i.toDouble(), incomeBuckets[i]),
+    );
+    final expenseSpots = List.generate(
+      bucketCount,
+      (i) => FlSpot(i.toDouble(), expenseBuckets[i]),
+    );
+
+    final incomeLine = LineChartBarData(
+      spots: incomeSpots,
+      isCurved: false,
+      color: AppColors.textOnDark,
+      barWidth: 2.4,
+      isStrokeCapRound: true,
+      dotData: FlDotData(
+        show: true,
+        checkToShowDot: (spot, _) => spot.x.toInt() == activeIndex,
+        getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
+          radius: 4.5,
+          color: AppColors.textOnDark,
+          strokeWidth: 2.5,
+          strokeColor: AppColors.darkBase,
+        ),
+      ),
+    );
+
+    final expenseLine = LineChartBarData(
+      spots: expenseSpots,
+      isCurved: false,
+      color: const Color(0xFF64748B),
+      barWidth: 2.0,
+      isStrokeCapRound: true,
+      dotData: const FlDotData(show: false),
+    );
+
+    final startLabel = widget.rangeMode == ReportRangeMode.daily
+        ? '00:00'
+        : _dayMonth(widget.period.start);
+    final endLabel = widget.rangeMode == ReportRangeMode.daily
+        ? '24:00'
+        : _dayMonth(widget.period.end);
 
     return Container(
-      height: 148,
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(12, 16, 16, 12),
+      padding: const EdgeInsets.fromLTRB(14, 18, 14, 12),
       decoration: BoxDecoration(
         color: AppColors.darkCard,
         borderRadius: AppRadius.cardBorder,
         border: Border.all(color: AppColors.darkBorder),
       ),
-      child: LineChart(
-        LineChartData(
-          minY: 0,
-          maxY: chartMaxY,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: chartMaxY / 3,
-            getDrawingHorizontalLine: (_) => const FlLine(
-              color: AppColors.darkBorder,
-              strokeWidth: 1,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 136,
+            child: LineChart(
+              LineChartData(
+                minY: 0,
+                maxY: chartMaxY,
+                showingTooltipIndicators: [
+                  ShowingTooltipIndicators([
+                    LineBarSpot(
+                      incomeLine,
+                      0,
+                      incomeSpots[activeIndex],
+                    ),
+                  ]),
+                ],
+                lineTouchData: LineTouchData(
+                  handleBuiltInTouches: false,
+                  touchCallback: (event, response) {
+                    final spots = response?.lineBarSpots;
+                    if (spots != null && spots.isNotEmpty) {
+                      final tappedIdx = spots.first.x.toInt().clamp(
+                        0,
+                        bucketCount - 1,
+                      );
+                      if (tappedIdx != _touchedIndex) {
+                        setState(() => _touchedIndex = tappedIdx);
+                      }
+                    }
+                  },
+                  touchTooltipData: LineTouchTooltipData(
+                    tooltipMargin: 10,
+                    tooltipPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    tooltipBorderRadius: BorderRadius.circular(8),
+                    tooltipBorder: const BorderSide(
+                      color: AppColors.darkBorder,
+                      width: 1,
+                    ),
+                    getTooltipColor: (_) => AppColors.darkBase,
+                    fitInsideHorizontally: true,
+                    fitInsideVertically: true,
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        final idx = spot.x.toInt().clamp(0, bucketCount - 1);
+                        final net =
+                            (incomeBuckets[idx] - expenseBuckets[idx]).round();
+                        return LineTooltipItem(
+                          '${bucketLabels[idx]}: ${_formatCompactSigned(net)}',
+                          AppTypography.captionMedium(
+                            color: AppColors.textOnDark,
+                          ).copyWith(
+                            fontFeatures: AppTypography.tabularFeatures,
+                          ),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: chartMaxY / 2,
+                  getDrawingHorizontalLine: (_) => const FlLine(
+                    color: AppColors.darkBorder,
+                    strokeWidth: 1,
+                  ),
+                ),
+                borderData: FlBorderData(show: false),
+                titlesData: const FlTitlesData(
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
+                lineBarsData: [incomeLine, expenseLine],
+              ),
             ),
           ),
-          borderData: FlBorderData(show: false),
-          titlesData: const FlTitlesData(
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              Text(
+                startLabel,
+                style: AppTypography.labelSmall(
+                  color: AppColors.textOnDarkSubtle,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'Putih: Masuk · Abu: Keluar',
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.labelSmall(
+                    color: AppColors.textOnDarkMuted,
+                  ),
+                ),
+              ),
+              Text(
+                endLabel,
+                style: AppTypography.labelSmall(
+                  color: AppColors.textOnDarkSubtle,
+                ),
+              ),
+            ],
           ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: List.generate(
-                bucketCount,
-                (i) => FlSpot(i.toDouble(), incomeBuckets[i]),
-              ),
-              isCurved: true,
-              color: AppColors.incomeGreenLight,
-              barWidth: 2.5,
-              dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(
-                show: true,
-                color: AppColors.incomeGreenLight.withValues(alpha: 0.12),
-              ),
-            ),
-            LineChartBarData(
-              spots: List.generate(
-                bucketCount,
-                (i) => FlSpot(i.toDouble(), expenseBuckets[i]),
-              ),
-              isCurved: true,
-              color: const Color(0xFFFCA5A5),
-              barWidth: 2.0,
-              dotData: const FlDotData(show: false),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

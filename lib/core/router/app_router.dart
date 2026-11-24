@@ -78,7 +78,7 @@ GoRouter createAppRouter({
         path: AppRoutes.catat,
         builder: (context, state) {
           final type =
-              state.uri.queryParameters['type'] ?? TransactionTypes.expense;
+              state.uri.queryParameters['type'] ?? TransactionTypes.income;
           return CatatTransaksiScreen(initialType: type);
         },
       ),

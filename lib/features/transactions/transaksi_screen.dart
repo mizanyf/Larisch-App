@@ -12,6 +12,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../core/widgets/account_selector_chips.dart';
 import '../../core/widgets/empty_state_view.dart';
+import '../../core/widgets/month_picker_sheet.dart';
 import '../../core/widgets/transaction_list_tile.dart';
 
 /// Screen 2 - Transaksi: Searchable, filterable, date-grouped transaction history.
@@ -50,6 +51,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
   void _showAccountFilterSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: AppColors.surfaceWhite,
       shape: const RoundedRectangleBorder(
         borderRadius: AppRadius.sheetTopBorder,
@@ -149,8 +151,11 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   _FilterChipButton(
                     label: AppDateFormatter.monthYear(selectedMonth),
-                    onTap: () =>
-                        ref.read(selectedMonthProvider.notifier).previousMonth(),
+                    onTap: () => showMonthPickerSheet(
+                      context,
+                      ref,
+                      selectedMonth,
+                    ),
                   ),
                 ],
               ),
@@ -283,14 +288,19 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
             // Grouped List or Empty State
             Expanded(
               child: filtered.isEmpty
-                  ? EmptyStateView(
-                      icon: Icons.search_off_rounded,
-                      title: 'Tidak Ada Transaksi',
-                      description: _searchQuery.isNotEmpty
-                          ? 'Tidak ditemukan transaksi untuk kata kunci "$_searchQuery".'
-                          : 'Belum ada transaksi tercatat pada filter dan bulan ini.',
-                      actionLabel: 'Catat Transaksi',
-                      onAction: () => context.push(AppRoutes.catat),
+                  ? SingleChildScrollView(
+                      padding: const EdgeInsets.only(
+                        bottom: AppSpacing.bottomNavClearance,
+                      ),
+                      child: EmptyStateView(
+                        icon: Icons.search_off_rounded,
+                        title: 'Tidak Ada Transaksi',
+                        description: _searchQuery.isNotEmpty
+                            ? 'Tidak ditemukan transaksi untuk kata kunci "$_searchQuery".'
+                            : 'Belum ada transaksi tercatat pada filter dan bulan ini.',
+                        actionLabel: 'Catat Transaksi',
+                        onAction: () => context.push(AppRoutes.catat),
+                      ),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(

@@ -14,6 +14,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../core/widgets/empty_state_view.dart';
 import '../../core/widgets/larisch_logo_badge.dart';
+import '../../core/widgets/month_picker_sheet.dart';
 import '../../core/widgets/transaction_list_tile.dart';
 
 /// Screen 1 - Beranda: Dark brand header (Total Saldo Kas + 3 manual accounts)
@@ -32,71 +33,6 @@ class BerandaScreen extends ConsumerWidget {
       default:
         return accountId;
     }
-  }
-
-  void _showMonthPicker(BuildContext context, WidgetRef ref, DateTime current) {
-    final now = DateTime.now();
-    final months = List.generate(12, (index) {
-      return DateTime(now.year, now.month - index, 1);
-    });
-
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surfaceWhite,
-      shape: const RoundedRectangleBorder(
-        borderRadius: AppRadius.sheetTopBorder,
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Pilih Periode Bulan', style: AppTypography.sectionHeading()),
-                const SizedBox(height: AppSpacing.md),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: months.length,
-                    separatorBuilder: (_, _) => const Divider(),
-                    itemBuilder: (context, index) {
-                      final m = months[index];
-                      final isSelected =
-                          m.year == current.year && m.month == current.month;
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          AppDateFormatter.monthYear(m),
-                          style: AppTypography.bodyMedium(
-                            color: isSelected
-                                ? AppColors.accentBlue
-                                : AppColors.textPrimary,
-                          ),
-                        ),
-                        trailing: isSelected
-                            ? const Icon(
-                                Icons.check_rounded,
-                                color: AppColors.accentBlue,
-                              )
-                            : null,
-                        onTap: () {
-                          ref
-                              .read(selectedMonthProvider.notifier)
-                              .setMonth(m.year, m.month);
-                          Navigator.of(sheetContext).pop();
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -150,7 +86,7 @@ class BerandaScreen extends ConsumerWidget {
                             ],
                           ),
                           InkWell(
-                            onTap: () => _showMonthPicker(
+                            onTap: () => showMonthPickerSheet(
                               context,
                               ref,
                               selectedMonth,

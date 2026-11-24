@@ -16,7 +16,7 @@ import '../onboarding/onboarding_state.dart';
 class CatatTransaksiScreen extends ConsumerStatefulWidget {
   const CatatTransaksiScreen({
     super.key,
-    this.initialType = TransactionTypes.expense,
+    this.initialType = TransactionTypes.income,
     this.editingTransaction,
   });
 
@@ -35,6 +35,7 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
   late DateTime _selectedDate;
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
+  final FocusNode _amountFocusNode = FocusNode();
 
   String? _amountError;
   bool _isSaving = false;
@@ -45,6 +46,9 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
   @override
   void initState() {
     super.initState();
+    _amountFocusNode.addListener(() {
+      if (mounted) setState(() {});
+    });
     final editing = widget.editingTransaction;
     if (editing != null) {
       _type = editing.type;
@@ -69,6 +73,7 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
 
   @override
   void dispose() {
+    _amountFocusNode.dispose();
     _amountController.dispose();
     _noteController.dispose();
     super.dispose();
@@ -190,7 +195,7 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
 
     final amountColor = _amountError != null
         ? const Color(0xFFFCA5A5)
-        : (_isIncome ? AppColors.incomeGreenLight : AppColors.textOnDark);
+        : AppColors.textOnDark;
 
     final submitColor = _isEditing
         ? AppColors.accentBlue
@@ -263,58 +268,113 @@ class _CatatTransaksiScreenState extends ConsumerState<CatatTransaksiScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xxl),
+                    const SizedBox(height: AppSpacing.xl),
                     Text(
                       _isIncome ? 'Nominal Pemasukan' : 'Nominal Pengeluaran',
                       style: AppTypography.caption(
                         color: AppColors.textOnDarkMuted,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          'Rp ',
-                          style: AppTypography.headlineLarge(
-                            color: amountColor,
+                    const SizedBox(height: AppSpacing.sm),
+                    GestureDetector(
+                      onTap: () => _amountFocusNode.requestFocus(),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 160),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.darkCard,
+                          borderRadius: AppRadius.cardBorder,
+                          border: Border.all(
+                            color: _amountError != null
+                                ? AppColors.expenseRedLight
+                                : _amountFocusNode.hasFocus
+                                ? (_isIncome
+                                      ? AppColors.incomeGreenLight
+                                      : AppColors.expenseRedLight)
+                                : AppColors.darkBorder,
+                            width: _amountFocusNode.hasFocus ||
+                                    _amountError != null
+                                ? 1.5
+                                : 1.0,
                           ),
                         ),
-                        IntrinsicWidth(
-                          child: TextField(
-                            key: const Key('amount_field'),
-                            controller: _amountController,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [ThousandsRupiahInputFormatter()],
-                            onChanged: (_) {
-                              if (_amountError != null) {
-                                setState(() => _amountError = null);
-                              }
-                            },
-                            style: AppTypography.displayBalance(
-                              color: amountColor,
-                            ).copyWith(fontSize: 34),
-                            decoration: InputDecoration(
-                              hintText: '0',
-                              hintStyle: AppTypography.displayBalance(
-                                color: amountColor.withValues(alpha: 0.55),
-                              ).copyWith(fontSize: 34),
-                              filled: false,
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              isDense: true,
-                            ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                'Rp ',
+                                style: AppTypography.headlineLarge(
+                                  color: amountColor,
+                                ),
+                              ),
+                              IntrinsicWidth(
+                                child: TextField(
+                                  key: const Key('amount_field'),
+                                  controller: _amountController,
+                                  focusNode: _amountFocusNode,
+                                  autofocus: !_isEditing,
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  cursorColor: _isIncome
+                                      ? AppColors.incomeGreenLight
+                                      : AppColors.expenseRedLight,
+                                  cursorWidth: 2.5,
+                                  inputFormatters: [
+                                    ThousandsRupiahInputFormatter(
+                                      maxDigits: 12,
+                                      onMaxDigitsExceeded: () {
+                                        setState(() {
+                                          _amountError =
+                                              'Maksimal nominal adalah 12 digit (Rp 999.999.999.999)';
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                  onChanged: (_) {
+                                    if (_amountError != null) {
+                                      setState(() => _amountError = null);
+                                    }
+                                  },
+                                  style: AppTypography.displayBalance(
+                                    color: amountColor,
+                                  ).copyWith(fontSize: 32),
+                                  decoration: InputDecoration(
+                                    hintText: '0',
+                                    hintStyle: AppTypography.displayBalance(
+                                      color: amountColor.withValues(alpha: 0.45),
+                                    ).copyWith(fontSize: 32),
+                                    filled: false,
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
+                    const SizedBox(height: AppSpacing.xs),
+                    if (_amountError == null)
+                      Text(
+                        'Ketuk kolom di atas untuk mengisi nominal',
+                        style: AppTypography.labelSmall(
+                          color: AppColors.textOnDarkSubtle,
+                        ),
+                      ),
                     if (_amountError != null) ...[
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sm),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,

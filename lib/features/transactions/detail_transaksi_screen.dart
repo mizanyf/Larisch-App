@@ -130,29 +130,15 @@ class DetailTransaksiScreen extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  (isIncome
-                                          ? AppColors.incomeGreen
-                                          : AppColors.expenseRed)
-                                      .withValues(alpha: 0.18),
-                              borderRadius: AppRadius.pillBorder,
-                            ),
-                            child: Text(
-                              isIncome ? 'Pemasukan' : 'Pengeluaran',
-                              style: AppTypography.captionMedium(
-                                color: isIncome
-                                    ? AppColors.incomeGreenLight
-                                    : const Color(0xFFFCA5A5),
-                              ),
+                          Text(
+                            isIncome ? 'Pemasukan' : 'Pengeluaran',
+                            style: AppTypography.captionMedium(
+                              color: isIncome
+                                  ? AppColors.incomeGreenLight
+                                  : const Color(0xFFFCA5A5),
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: AppSpacing.sm),
                           Text(
                             CurrencyFormatter.formatSigned(
                               tx.amount,

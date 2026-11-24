@@ -71,8 +71,17 @@ final onboardingDraftProvider =
       return OnboardingDraftNotifier();
     });
 
-/// Formats numeric text input live with Indonesian thousands dots (e.g. 5.000.000).
+/// Formats numeric text input live with Indonesian thousands dots (e.g. 5.000.000)
+/// and enforces a maximum digit limit (default 12 digits = Rp 999.999.999.999).
 class ThousandsRupiahInputFormatter extends TextInputFormatter {
+  ThousandsRupiahInputFormatter({
+    this.maxDigits = 12,
+    this.onMaxDigitsExceeded,
+  });
+
+  final int maxDigits;
+  final VoidCallback? onMaxDigitsExceeded;
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
@@ -84,6 +93,11 @@ class ThousandsRupiahInputFormatter extends TextInputFormatter {
         text: '',
         selection: TextSelection.collapsed(offset: 0),
       );
+    }
+
+    if (digits.length > maxDigits) {
+      onMaxDigitsExceeded?.call();
+      return oldValue;
     }
 
     final parsed = int.tryParse(digits);
