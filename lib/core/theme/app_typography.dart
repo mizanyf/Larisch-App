@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Typography tokens using Inter with tabular figures for financial amounts.
+/// Typography tokens using bundled offline Inter static weights (400/500/600/700)
+/// with tabular figures for financial amounts, matching FigCraft Design System.
 abstract final class AppTypography {
+  static const String fontFamily = 'Inter';
+
   static const List<FontFeature> tabularFeatures = [
     FontFeature.tabularFigures(),
   ];
@@ -17,7 +19,8 @@ abstract final class AppTypography {
     Color? color,
     bool tabular = false,
   }) {
-    return GoogleFonts.inter(
+    return TextStyle(
+      fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
       height: height / fontSize,
@@ -57,7 +60,7 @@ abstract final class AppTypography {
   static TextStyle sectionHeading({Color color = AppColors.textPrimary}) =>
       _inter(
         fontSize: 16,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         height: 22,
         letterSpacing: -0.2,
         color: color,
@@ -72,18 +75,27 @@ abstract final class AppTypography {
     tabular: true,
   );
 
+  static TextStyle listTitle({Color color = AppColors.textPrimary}) => _inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 20,
+    letterSpacing: -0.1,
+    color: color,
+  );
+
   static TextStyle amountMedium({Color color = AppColors.textPrimary}) =>
       _inter(
         fontSize: 14,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         height: 20,
+        letterSpacing: -0.1,
         color: color,
         tabular: true,
       );
 
   static TextStyle bodyMedium({Color color = AppColors.textPrimary}) => _inter(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     height: 20,
     color: color,
   );
@@ -106,7 +118,7 @@ abstract final class AppTypography {
   static TextStyle captionMedium({Color color = AppColors.textSecondary}) =>
       _inter(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         height: 16,
         color: color,
       );

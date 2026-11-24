@@ -370,9 +370,9 @@ class _AccountBalanceColumn extends StatelessWidget {
           CurrencyFormatter.format(amount),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppTypography.captionMedium(
+          style: AppTypography.amountMedium(
             color: AppColors.textOnDark,
-          ).copyWith(fontFeatures: AppTypography.tabularFeatures),
+          ).copyWith(fontSize: 13.5),
         ),
       ],
     );

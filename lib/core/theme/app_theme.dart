@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'app_radius.dart';
 import 'app_typography.dart';
 
-/// Main Material 3 theme configured with Larisch design tokens.
+/// Main Material 3 theme configured with Larisch design tokens & offline Inter font.
 abstract final class AppTheme {
   static ThemeData get light {
-    final baseTextTheme = GoogleFonts.interTextTheme();
-
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: AppTypography.fontFamily,
       scaffoldBackgroundColor: AppColors.surfaceWhite,
       colorScheme: const ColorScheme.light(
         primary: AppColors.accentBlue,
@@ -26,7 +24,7 @@ abstract final class AppTheme {
         onError: AppColors.textOnDark,
         outline: AppColors.borderLight,
       ),
-      textTheme: baseTextTheme.copyWith(
+      textTheme: TextTheme(
         headlineLarge: AppTypography.headlineLarge(),
         titleLarge: AppTypography.pageTitle(),
         titleMedium: AppTypography.sectionHeading(),

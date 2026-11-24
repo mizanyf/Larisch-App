@@ -42,7 +42,7 @@ class TransactionListTile extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.bodyMedium(),
+                        style: AppTypography.listTitle(),
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
