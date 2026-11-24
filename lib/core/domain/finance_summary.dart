@@ -148,10 +148,7 @@ abstract final class FinanceCalculator {
       );
     }
 
-    return CashBalanceSummary(
-      totalCashBalance: totalCash,
-      accounts: summaries,
-    );
+    return CashBalanceSummary(totalCashBalance: totalCash, accounts: summaries);
   }
 
   static PeriodProfitSummary calculatePeriodProfit({
@@ -193,8 +190,7 @@ abstract final class FinanceCalculator {
         amount: entry.value,
         percentage: pct,
       );
-    }).toList()
-      ..sort((a, b) => b.amount.compareTo(a.amount));
+    }).toList()..sort((a, b) => b.amount.compareTo(a.amount));
 
     return PeriodProfitSummary(
       totalIncome: totalIncome,

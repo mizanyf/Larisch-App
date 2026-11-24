@@ -48,11 +48,11 @@ Checklist pengerjaan bertahap untuk aplikasi mobile **Larisch**.
 ---
 
 ## Phase 4 — Beranda & Pencatatan Transaksi
-- [ ] `Screen 1 - Beranda` (dark header, Total Saldo Kas + 3 akun, white sheet Laba Bersih, Quick Actions `+ Pemasukan` / `- Pengeluaran`, Transaksi Terbaru)
-- [ ] `Empty State Beranda` untuk user baru
-- [ ] `Screen 3 - Catat Transaksi` (mode Pemasukan & Pengeluaran, validasi nominal `<= 0`, pilih akun, kategori, tanggal, catatan, feedback sukses)
-- [ ] `Screen 2 - Transaksi` (search, filter jenis/akun/periode, ringkasan periode, daftar grouped by date, `Empty State Transaksi`)
-- [ ] `Detail Transaksi`, `Edit Transaksi`, dan `Konfirmasi Hapus Transaksi`
+- [x] `Screen 1 - Beranda` (`beranda_screen.dart`: dark header, Total Saldo Kas + 3 akun, white sheet Laba Bersih, Quick Actions `+ Pemasukan` / `- Pengeluaran`, Transaksi Terbaru, month picker)
+- [x] `Empty State Beranda` untuk user baru
+- [x] `Screen 3 - Catat Transaksi` (`catat_transaksi_screen.dart`: mode Pemasukan & Pengeluaran + Edit, validasi nominal `<= 0`, pilih akun, kategori, tanggal/jam, catatan, feedback SnackBar)
+- [x] `Screen 2 - Transaksi` (`transaksi_screen.dart`: search, filter jenis/akun/bulan, ringkasan cashflow, daftar grouped by date, `Empty State Transaksi`)
+- [x] `Detail Transaksi`, `Edit Transaksi`, dan `Konfirmasi Hapus Transaksi` (`detail_transaksi_screen.dart` + widget test `test/features/transactions_flow_test.dart`)
 
 ---
 

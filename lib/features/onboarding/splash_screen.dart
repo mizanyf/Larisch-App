@@ -39,14 +39,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _bootstrap() async {
-    final repo = ref.read(financeRepositoryProvider);
-    final (_, profile) = await (
-      Future<void>.delayed(widget.splashDuration),
-      repo.getBusinessProfile(),
-    ).wait;
+    bool isDone = false;
+    try {
+      final repo = ref.read(financeRepositoryProvider);
+      final (_, profile) = await (
+        Future<void>.delayed(widget.splashDuration),
+        repo.getBusinessProfile(),
+      ).wait;
+      isDone = profile != null && profile.onboardingCompleted;
+    } catch (error, stackTrace) {
+      debugPrint('Splash bootstrap error: $error\n$stackTrace');
+    }
 
     if (!mounted) return;
-    final isDone = profile != null && profile.onboardingCompleted;
     context.go(isDone ? AppRoutes.beranda : AppRoutes.welcome);
   }
 

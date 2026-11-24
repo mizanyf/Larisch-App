@@ -93,6 +93,10 @@ void main() {
       await tester.tap(find.text('Masuk ke Beranda'));
       await tester.pumpAndSettle();
       expect(find.text('Beranda'), findsWidgets);
+
+      // Flush Drift stream cleanup timers before test teardown.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(Duration.zero);
     },
   );
 
@@ -114,5 +118,8 @@ void main() {
 
     expect(find.text('Mulai Atur Usaha'), findsNothing);
     expect(find.text('Beranda'), findsWidgets);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(Duration.zero);
   });
 }

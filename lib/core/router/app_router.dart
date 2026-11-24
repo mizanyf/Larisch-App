@@ -1,11 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/dashboard/beranda_screen.dart';
 import '../../features/onboarding/onboarding_success_screen.dart';
 import '../../features/onboarding/setup_business_profile_screen.dart';
 import '../../features/onboarding/setup_initial_balances_screen.dart';
 import '../../features/onboarding/splash_screen.dart';
 import '../../features/onboarding/welcome_screen.dart';
+import '../../features/transactions/catat_transaksi_screen.dart';
+import '../../features/transactions/detail_transaksi_screen.dart';
+import '../../features/transactions/transaksi_screen.dart';
+import '../database/seed_data.dart';
 import 'app_routes.dart';
 import 'main_shell_screen.dart';
 
@@ -45,21 +50,13 @@ GoRouter createAppRouter({
         routes: [
           GoRoute(
             path: AppRoutes.beranda,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TabPlaceholderScreen(
-                title: 'Beranda',
-                subtitle: 'Layar Beranda siap di-slicing pada Phase 4.',
-              ),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: BerandaScreen()),
           ),
           GoRoute(
             path: AppRoutes.transaksi,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TabPlaceholderScreen(
-                title: 'Transaksi',
-                subtitle: 'Layar Riwayat Transaksi siap di-slicing pada Phase 4.',
-              ),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: TransaksiScreen()),
           ),
           GoRoute(
             path: AppRoutes.laporan,
@@ -83,10 +80,18 @@ GoRouter createAppRouter({
       ),
       GoRoute(
         path: AppRoutes.catat,
-        builder: (context, state) => const TabPlaceholderScreen(
-          title: 'Catat Transaksi',
-          subtitle: 'Form Catat Pemasukan & Pengeluaran siap di-slicing pada Phase 4.',
-        ),
+        builder: (context, state) {
+          final type =
+              state.uri.queryParameters['type'] ?? TransactionTypes.expense;
+          return CatatTransaksiScreen(initialType: type);
+        },
+      ),
+      GoRoute(
+        path: '${AppRoutes.transaksi}/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
+          return DetailTransaksiScreen(transactionId: id);
+        },
       ),
     ],
   );
