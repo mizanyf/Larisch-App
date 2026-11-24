@@ -8,11 +8,12 @@ import '../../core/router/app_routes.dart';
 import '../../core/theme/theme.dart';
 import '../../core/widgets/larisch_logo_badge.dart';
 
-/// 00 - Splash Screen: Logo-only on pure black (#000000) matching FigCraft.
+/// 00 - Splash Screen: Logo-only on pure black (#000000) with smooth
+/// fade-in -> hold -> fade-out sequence before entering the app.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({
     super.key,
-    this.splashDuration = const Duration(milliseconds: 1200),
+    this.splashDuration = const Duration(milliseconds: 1600),
   });
 
   final Duration splashDuration;
@@ -24,17 +25,59 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _fadeIn;
+  late final Animation<double> _opacity;
+  late final Animation<double> _scale;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450),
+      duration: widget.splashDuration,
     );
-    _fadeIn = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    _controller.forward();
+
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 32,
+      ),
+      TweenSequenceItem(
+        tween: ConstantTween<double>(1.0),
+        weight: 36,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.easeInCubic)),
+        weight: 32,
+      ),
+    ]).animate(_controller);
+
+    _scale = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 0.94,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 32,
+      ),
+      TweenSequenceItem(
+        tween: ConstantTween<double>(1.0),
+        weight: 36,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 1.03,
+        ).chain(CurveTween(curve: Curves.easeInCubic)),
+        weight: 32,
+      ),
+    ]).animate(_controller);
+
     _bootstrap();
   }
 
@@ -43,7 +86,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     try {
       final repo = ref.read(financeRepositoryProvider);
       final (_, profile) = await (
-        Future<void>.delayed(widget.splashDuration),
+        _controller.forward().orCancel.catchError((_) {}),
         repo.getBusinessProfile(),
       ).wait;
       isDone = profile != null && profile.onboardingCompleted;
@@ -75,12 +118,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         body: SafeArea(
           child: Center(
             child: FadeTransition(
-              opacity: _fadeIn,
-              child: Image.asset(
-                LarischLogoBadge.assetPath,
-                width: logoSize,
-                height: logoSize,
-                fit: BoxFit.contain,
+              opacity: _opacity,
+              child: ScaleTransition(
+                scale: _scale,
+                child: Image.asset(
+                  LarischLogoBadge.assetPath,
+                  width: logoSize,
+                  height: logoSize,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),

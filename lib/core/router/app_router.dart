@@ -20,7 +20,7 @@ import 'main_shell_screen.dart';
 
 /// Creates the GoRouter instance; [splashDuration] can be shortened in tests.
 GoRouter createAppRouter({
-  Duration splashDuration = const Duration(milliseconds: 1200),
+  Duration splashDuration = const Duration(milliseconds: 1600),
 }) {
   return GoRouter(
     initialLocation: AppRoutes.splash,
