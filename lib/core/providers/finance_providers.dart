@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/app_database.dart';
 import '../database/finance_repository.dart';
+import '../database/local_backup_service.dart';
 import '../domain/finance_summary.dart';
 
 /// Singleton local SQLite database provider.
@@ -14,6 +15,11 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 /// Repository provider for all local CRUD & financial operations.
 final financeRepositoryProvider = Provider<FinanceRepository>((ref) {
   return FinanceRepository(ref.watch(appDatabaseProvider));
+});
+
+/// Local JSON backup & restore service provider (zero cloud).
+final localBackupServiceProvider = Provider<LocalBackupService>((ref) {
+  return LocalBackupService(ref.watch(appDatabaseProvider));
 });
 
 /// Reactive stream of the active business profile.

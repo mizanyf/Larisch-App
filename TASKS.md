@@ -57,13 +57,13 @@ Checklist pengerjaan bertahap untuk aplikasi mobile **Larisch**.
 ---
 
 ## Phase 5 — Laporan Keuangan & Profil / Pengaturan
-- [ ] `Screen 4 - Laporan Keuangan` (filter Harian/Mingguan/Bulanan, Laba Bersih & Margin, grafik tren `fl_chart`, breakdown pengeluaran per kategori, `Empty State Laporan`)
-- [ ] `Screen 5 - Profil` (kartu identitas usaha + menu pengaturan)
-- [ ] `Edit Profil Usaha`
-- [ ] `Kelola Kategori` (tambah, edit, arsipkan/hapus kategori)
-- [ ] `Backup Data Lokal` (export `.json` sesuai skema di `ARCHITECTURE.md`)
-- [ ] `Restore Data Lokal` (validasi & import `.json` dalam transaksi SQLite atomik)
-- [ ] `Reset Data` (dialog konfirmasi ganda)
+- [x] `Screen 4 - Laporan Keuangan` (`laporan_screen.dart`: filter Harian/Mingguan/Bulanan, Laba Bersih & Margin, grafik tren `fl_chart`, breakdown pengeluaran per kategori, `Empty State Laporan`)
+- [x] `Screen 5 - Profil` (`profil_screen.dart`: kartu identitas usaha + menu pengaturan)
+- [x] `Edit Profil Usaha` & `Atur Saldo Awal Manual`
+- [x] `Kelola Kategori` (`kelola_kategori_screen.dart`: tambah, edit, arsipkan/hapus kategori)
+- [x] `Backup Data Lokal` (`local_backup_service.dart` + `backup_restore_screen.dart`: export `.json` sesuai skema di `ARCHITECTURE.md`)
+- [x] `Restore Data Lokal` (validasi & import `.json` dalam transaksi SQLite atomik + pratinjau konfirmasi)
+- [x] `Reset Data` (dialog konfirmasi ganda -> kembali ke Welcome) + unit & widget tests (`local_backup_test.dart`, `reports_profile_test.dart`)
 
 ---
 

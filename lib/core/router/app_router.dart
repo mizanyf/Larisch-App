@@ -7,6 +7,10 @@ import '../../features/onboarding/setup_business_profile_screen.dart';
 import '../../features/onboarding/setup_initial_balances_screen.dart';
 import '../../features/onboarding/splash_screen.dart';
 import '../../features/onboarding/welcome_screen.dart';
+import '../../features/profile/backup_restore_screen.dart';
+import '../../features/profile/kelola_kategori_screen.dart';
+import '../../features/profile/profil_screen.dart';
+import '../../features/reports/laporan_screen.dart';
 import '../../features/transactions/catat_transaksi_screen.dart';
 import '../../features/transactions/detail_transaksi_screen.dart';
 import '../../features/transactions/transaksi_screen.dart';
@@ -60,21 +64,13 @@ GoRouter createAppRouter({
           ),
           GoRoute(
             path: AppRoutes.laporan,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TabPlaceholderScreen(
-                title: 'Laporan',
-                subtitle: 'Layar Laporan Keuangan siap di-slicing pada Phase 5.',
-              ),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: LaporanScreen()),
           ),
           GoRoute(
             path: AppRoutes.profil,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TabPlaceholderScreen(
-                title: 'Profil',
-                subtitle: 'Layar Profil & Backup Lokal siap di-slicing pada Phase 5.',
-              ),
-            ),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ProfilScreen()),
           ),
         ],
       ),
@@ -92,6 +88,14 @@ GoRouter createAppRouter({
           final id = int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
           return DetailTransaksiScreen(transactionId: id);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.kelolaKategori,
+        builder: (context, state) => const KelolaKategoriScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.backupRestore,
+        builder: (context, state) => const BackupRestoreScreen(),
       ),
     ],
   );

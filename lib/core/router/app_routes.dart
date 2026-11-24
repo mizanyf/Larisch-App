@@ -11,4 +11,6 @@ abstract final class AppRoutes {
   static const String laporan = '/laporan';
   static const String profil = '/profil';
   static const String catat = '/catat';
+  static const String kelolaKategori = '/profil/kategori';
+  static const String backupRestore = '/profil/backup';
 }
