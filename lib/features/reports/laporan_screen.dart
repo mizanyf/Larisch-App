@@ -401,6 +401,10 @@ class _LaporanScreenState extends ConsumerState<LaporanScreen> {
                 ),
               ),
             ),
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: ColoredBox(color: AppColors.surfaceWhite),
+            ),
           ],
         ),
       ),

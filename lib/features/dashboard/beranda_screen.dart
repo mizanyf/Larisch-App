@@ -339,6 +339,10 @@ class BerandaScreen extends ConsumerWidget {
               ),
               ),
             ),
+            const SliverFillRemaining(
+              hasScrollBody: false,
+              child: ColoredBox(color: AppColors.surfaceWhite),
+            ),
           ],
         ),
       ),
