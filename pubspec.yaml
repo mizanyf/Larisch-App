@@ -1,0 +1,34 @@
+name: larisch_app
+description: "Larisch — Aplikasi Pembukuan Keuangan Harian untuk UMKM Indonesia (Offline-First)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  drift: ^2.26.1
+  drift_flutter: ^0.2.4
+  flutter_riverpod: ^2.6.1
+  go_router: ^15.1.1
+  fl_chart: ^0.71.0
+  intl: ^0.20.2
+  file_picker: ^10.1.2
+  share_plus: ^11.0.0
+  path_provider: ^2.1.5
+  google_fonts: ^6.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.26.1
+  build_runner: ^2.4.15
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo/larisch.png

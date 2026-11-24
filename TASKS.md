@@ -1,0 +1,80 @@
+# TASKS — Checklist Pengembangan Larisch (`larisch_app`)
+
+Checklist pengerjaan bertahap untuk aplikasi mobile **Larisch**.  
+**Prioritas Utama:** Aplikasi Mobile Flutter MVP -> **Tahap Terakhir:** Website Marketing Landing Page.
+
+---
+
+## Phase 0 — Dokumentasi & Persiapan Project
+- [x] Inisialisasi project Flutter (`c:\larisch_app`)
+- [x] Menempatkan logo resmi di `assets/logo/larisch.png`
+- [x] Menyusun dokumentasi fondasi (`README.md`, `PRD.md`, `DESIGN.md`, `ARCHITECTURE.md`, `AGENTS.md`, `TASKS.md`)
+- [x] Daftarkan `assets/logo/larisch.png` dan dependencies (`drift`, `drift_flutter`, `flutter_riverpod`, `go_router`, `fl_chart`, `intl`, `file_picker`, `share_plus`, `path_provider`, `google_fonts`) di `pubspec.yaml`
+- [x] Verifikasi Flutter SDK (`3.47.5` / Dart `3.13.4`) & `flutter pub get` berjalan bersih
+
+---
+
+## Phase 1 — Design Tokens & Fondasi Core
+- [x] Buat Design Tokens di `lib/core/theme/` (`app_colors.dart`, `app_typography.dart`, `app_spacing.dart`, `app_radius.dart`, `app_theme.dart`, `theme.dart`) sesuai `DESIGN.md`
+- [x] Buat formatter utilitas (`currency_formatter.dart` untuk format `Rp` integer & `date_formatter.dart` locale `id_ID`) + unit test
+- [x] Buat komponen global reusable di `lib/core/widgets/`:
+  - [x] `LarischLogoBadge`
+  - [x] `FloatingBottomNav` (4 tab + FAB `+` biru terpisah)
+  - [x] `TransactionListTile`
+  - [x] `AccountSelectorChips` (Tunai, QRIS, Rekening Bank)
+  - [x] `EmptyStateView`
+
+---
+
+## Phase 2 — Database Lokal (Drift SQLite) & Domain Logic
+- [x] Definisikan tabel Drift (`business_profiles`, `cash_accounts`, `categories`, `transactions`) di `lib/core/database/`
+- [x] Seed 3 akun kas manual (`Tunai`, `QRIS`, `Rekening Bank`) & kategori bawaan pemasukan/pengeluaran saat pertama kali buka aplikasi
+- [x] Jalankan `dart run build_runner build` untuk generate `app_database.g.dart`
+- [x] Implementasikan `FinanceRepository`, `FinanceCalculator`, dan Riverpod providers (`finance_providers.dart`) untuk:
+  - [x] Perhitungan dinamis **Saldo per Akun Kas** & **Total Saldo Kas**
+  - [x] Perhitungan dinamis **Laba Bersih**, **Total Pemasukan**, **Total Pengeluaran**, dan **Margin (%)** per periode
+- [x] Tulis unit test perhitungan saldo (`test/core/finance_database_test.dart`: tambah, edit, hapus, pindah akun, validasi `<= 0`, periode kosong)
+
+---
+
+## Phase 3 — Onboarding & Navigasi Utama
+- [x] Setup `GoRouter` (`app_router.dart`, `app_routes.dart`) & `MainShellScreen` (4 tab + FAB `+`) dengan redirect otomatis user baru vs user lama
+- [x] `00 - Splash Screen` (logo-only `assets/logo/larisch.png` di latar `#000000`)
+- [x] `01 - Welcome Screen`
+- [x] `02 - Setup Profil Usaha`
+- [x] `03 - Setup Saldo Awal Manual` (Tunai, QRIS, Rekening Bank)
+- [x] `04 - Onboarding Success` -> masuk ke Beranda (+ widget test end-to-end `test/features/onboarding_flow_test.dart`)
+
+---
+
+## Phase 4 — Beranda & Pencatatan Transaksi
+- [ ] `Screen 1 - Beranda` (dark header, Total Saldo Kas + 3 akun, white sheet Laba Bersih, Quick Actions `+ Pemasukan` / `- Pengeluaran`, Transaksi Terbaru)
+- [ ] `Empty State Beranda` untuk user baru
+- [ ] `Screen 3 - Catat Transaksi` (mode Pemasukan & Pengeluaran, validasi nominal `<= 0`, pilih akun, kategori, tanggal, catatan, feedback sukses)
+- [ ] `Screen 2 - Transaksi` (search, filter jenis/akun/periode, ringkasan periode, daftar grouped by date, `Empty State Transaksi`)
+- [ ] `Detail Transaksi`, `Edit Transaksi`, dan `Konfirmasi Hapus Transaksi`
+
+---
+
+## Phase 5 — Laporan Keuangan & Profil / Pengaturan
+- [ ] `Screen 4 - Laporan Keuangan` (filter Harian/Mingguan/Bulanan, Laba Bersih & Margin, grafik tren `fl_chart`, breakdown pengeluaran per kategori, `Empty State Laporan`)
+- [ ] `Screen 5 - Profil` (kartu identitas usaha + menu pengaturan)
+- [ ] `Edit Profil Usaha`
+- [ ] `Kelola Kategori` (tambah, edit, arsipkan/hapus kategori)
+- [ ] `Backup Data Lokal` (export `.json` sesuai skema di `ARCHITECTURE.md`)
+- [ ] `Restore Data Lokal` (validasi & import `.json` dalam transaksi SQLite atomik)
+- [ ] `Reset Data` (dialog konfirmasi ganda)
+
+---
+
+## Phase 6 — QA, Verifikasi Offline & Build APK
+- [ ] Uji seluruh flow di mode offline (tanpa koneksi internet)
+- [ ] Uji validasi edge case (nominal besar, nama usaha panjang, restore file rusak/invalid)
+- [ ] Pastikan `flutter analyze` dan `flutter test` lolos 100% tanpa error
+- [ ] Build APK release (`flutter build apk --release`) dan uji langsung di perangkat Android
+
+---
+
+## Phase 7 — Website Marketing Landing Page (Terakhir)
+- [ ] Bangun landing page resmi Larisch berdasarkan **Page 3 (`🌐 Website — Larisch Landing Page`)** di FigCraft setelah aplikasi mobile MVP selesai
+- [ ] Sertakan screenshot real & tautan unduhan aplikasi Larisch
